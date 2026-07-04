@@ -1,0 +1,9 @@
+-> Google Fonts: Space Grotesk, Inter, JetBrains Mono for typography in style.css
+-> OpenWeather Geocoding API for city search autocomplete & reverse geocoding in script.js
+-> OpenWeather Current Weather API for live conditions in script.js
+-> OpenWeather 5 Day / 3 Hour Forecast API for daily and hourly forecast strips in script.js
+-> OpenWeather Air Pollution API for AQI in script.js
+-> Browser Geolocation API for "use my location" in script.js
+-> Canvas 2D API for the ambient rain/snow/star particle layer in script.js
+-> Inline SVG icon set (hand-built, no icon library) for weather condition icons
+-> localStorage for persisted unit preference and recent searches

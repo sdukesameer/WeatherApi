@@ -1,4 +1,0 @@
--> React Icons for icons in index.html
--> Open Sans for font in style.css
--> Unsplash Image API for image background in style.css
--> OpenWeather API for city's weather report in script.js
