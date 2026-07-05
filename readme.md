@@ -68,4 +68,4 @@ Then visit `http://localhost:8080`.
 
 ## Author
 
-Built by Sameer Sk · 2026
+Built by Sameer · 2026
