@@ -33,11 +33,17 @@ jobs:
         uses: actions/checkout@v4
       - name: Setup Pages
         uses: actions/configure-pages@v5
+      - name: Prepare site
+        # Stage only what the app needs — not .git (checkout leaves it in the
+        # workspace) and not the readme/talking-points files, which aren't part
+        # of the site and shouldn't be served at the Pages URL.
+        run: |
+          mkdir _site
+          cp index.html style.css script.js sw.js manifest.webmanifest icon.svg favicon.svg _site/
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          # Upload entire repository
-          path: '.'
+          path: '_site'
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v5
