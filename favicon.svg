@@ -1,0 +1,9 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" role="img" aria-label="Skyline">
+  <rect width="32" height="32" rx="7" fill="#0b1220"/>
+  <circle cx="12" cy="12.5" r="4" fill="#ffd27a"/>
+  <path d="M9 22.5a4.2 4.2 0 0 1 .8-8.3 5.8 5.8 0 0 1 11.2 1.7 4 4 0 0 1-.8 6.6Z"
+        fill="none" stroke="#f4f7fb" stroke-width="2" stroke-linejoin="round"/>
+  <g stroke="#4fd1ff" stroke-width="1.8" stroke-linecap="round">
+    <path d="M12 25.5l-1 2.5M17 25.5l-1 2.5M22 25.5l-1 2.5"/>
+  </g>
+</svg>

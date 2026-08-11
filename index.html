@@ -2,10 +2,14 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta http-equiv="X-UA-Compatible" content="IE=edge" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta name="description" content="Skyline — a live weather dashboard with hourly forecasts, air quality and day/night tracking." />
+  <meta name="theme-color" content="#0b1220" />
   <title>Skyline — Weather Dashboard</title>
+
+  <link rel="icon" href="./favicon.svg" type="image/svg+xml" />
+  <link rel="apple-touch-icon" href="./icon.svg" />
+  <link rel="manifest" href="./manifest.webmanifest" />
 
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,7 +20,7 @@
 <body>
 
   <!-- Animated sky backdrop: gradient + particles react to live weather -->
-  <canvas id="sky-canvas"></canvas>
+  <canvas id="sky-canvas" aria-hidden="true"></canvas>
 
   <main class="app" id="app">
 
@@ -36,11 +40,14 @@
             type="text"
             id="search-input"
             class="search-input"
-            placeholder="Search a city…"
+            placeholder="Search a city…  (press /)"
             aria-label="Search a city"
             aria-expanded="false"
             aria-controls="suggestions"
+            aria-autocomplete="list"
             role="combobox"
+            spellcheck="false"
+            enterkeyhint="search"
           />
           <button type="button" id="locate-btn" class="icon-btn" title="Use my location" aria-label="Use my current location">
             <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
@@ -49,29 +56,53 @@
             </svg>
           </button>
         </form>
-        <ul id="suggestions" class="suggestions" role="listbox" hidden></ul>
+        <ul id="suggestions" class="suggestions" role="listbox" aria-label="City suggestions" hidden></ul>
       </div>
 
-      <button type="button" id="unit-toggle" class="unit-toggle" aria-label="Toggle temperature unit">
-        <span class="unit-option active" data-unit="metric">°C</span>
-        <span class="unit-option" data-unit="imperial">°F</span>
-      </button>
+      <!-- Two real buttons so the toggle works with a keyboard, not just a mouse -->
+      <div id="unit-toggle" class="unit-toggle" role="group" aria-label="Temperature unit">
+        <button type="button" class="unit-option" data-unit="metric" aria-pressed="true">°C</button>
+        <button type="button" class="unit-option" data-unit="imperial" aria-pressed="false">°F</button>
+      </div>
     </header>
 
-    <div id="recent-chips" class="recent-chips" aria-label="Recent searches"></div>
+    <div id="places-bar" class="places-bar" aria-label="Saved and recent places"></div>
 
-    <section id="status-banner" class="status-banner" hidden></section>
+    <section id="status-banner" class="status-banner" role="status" hidden>
+      <span id="status-text" class="status-text"></span>
+      <button type="button" id="status-retry" class="status-btn" hidden>Retry</button>
+      <button type="button" id="status-dismiss" class="status-btn status-dismiss" aria-label="Dismiss message">&times;</button>
+    </section>
 
-    <section class="dashboard" id="dashboard" aria-live="polite">
+    <section class="dashboard" id="dashboard">
 
       <!-- Hero readout -->
       <div class="hero glass">
         <div class="hero-top">
-          <div>
+          <div class="hero-place">
             <h1 class="city-name" id="city-name">—</h1>
             <p class="city-meta" id="city-meta">&nbsp;</p>
           </div>
-          <div class="condition-icon" id="condition-icon" aria-hidden="true"></div>
+          <div class="hero-actions">
+            <button type="button" id="fav-btn" class="icon-btn" title="Save this place" aria-label="Save this place" aria-pressed="false" disabled>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M12 3.6l2.6 5.3 5.8.85-4.2 4.1 1 5.75L12 16.9l-5.2 2.7 1-5.75-4.2-4.1 5.8-.85L12 3.6Z"
+                      stroke="currentColor" stroke-width="1.6" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <button type="button" id="share-btn" class="icon-btn" title="Copy a link to this place" aria-label="Copy a link to this place" disabled>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M10 13.5a3.5 3.5 0 0 0 5 0l3-3a3.5 3.5 0 0 0-5-5l-1 1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+                <path d="M14 10.5a3.5 3.5 0 0 0-5 0l-3 3a3.5 3.5 0 0 0 5 5l1-1" stroke="currentColor" stroke-width="1.6" stroke-linecap="round"/>
+              </svg>
+            </button>
+            <button type="button" id="refresh-btn" class="icon-btn" title="Refresh now" aria-label="Refresh now" disabled>
+              <svg viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path d="M20 12a8 8 0 1 1-2.6-5.9M20 4v4h-4" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
+            <div class="condition-icon" id="condition-icon" aria-hidden="true"></div>
+          </div>
         </div>
 
         <div class="hero-mid">
@@ -79,17 +110,19 @@
           <div class="hero-mid-side">
             <span class="condition-label" id="condition-label">—</span>
             <span class="feels-like" id="feels-like">Feels like --°</span>
+            <span class="hi-lo" id="hi-lo">H --° · L --°</span>
           </div>
         </div>
 
         <!-- Day/night arc: sunrise → now → sunset -->
-        <div class="sun-arc-wrap">
+        <div class="sun-arc-wrap" id="sun-arc-wrap">
           <svg class="sun-arc" viewBox="0 0 240 130" aria-hidden="true">
-            <path d="M10 120 A110 110 0 0 1 230 120" fill="none" stroke="currentColor" stroke-opacity="0.25" stroke-width="2" stroke-dasharray="4 6"/>
+            <path id="sun-path" d="M10 120 A110 110 0 0 1 230 120" fill="none" stroke="currentColor" stroke-opacity="0.25" stroke-width="2" stroke-dasharray="4 6"/>
             <circle id="sun-dot" cx="10" cy="120" r="5" fill="currentColor"/>
           </svg>
           <div class="sun-arc-labels">
             <span id="sunrise-label">-- : --</span>
+            <span id="sun-caption" class="sun-caption">—</span>
             <span id="sunset-label">-- : --</span>
           </div>
         </div>
@@ -100,39 +133,67 @@
         <div class="stat glass">
           <span class="stat-label">Humidity</span>
           <span class="stat-value" id="stat-humidity">--%</span>
+          <span class="stat-sub" id="stat-humidity-sub">&nbsp;</span>
         </div>
         <div class="stat glass">
           <span class="stat-label">Wind</span>
-          <span class="stat-value" id="stat-wind">-- km/h</span>
+          <span class="stat-value">
+            <span id="stat-wind">--</span>
+            <svg class="wind-arrow" id="wind-arrow" viewBox="0 0 24 24" fill="none" aria-hidden="true" hidden>
+              <path d="M12 20V5M12 4l-5 5M12 4l5 5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </span>
+          <span class="stat-sub" id="stat-wind-sub">&nbsp;</span>
         </div>
         <div class="stat glass">
           <span class="stat-label">Pressure</span>
-          <span class="stat-value" id="stat-pressure">-- hPa</span>
+          <span class="stat-value" id="stat-pressure">--</span>
+          <span class="stat-sub" id="stat-pressure-sub">&nbsp;</span>
         </div>
         <div class="stat glass">
           <span class="stat-label">Visibility</span>
-          <span class="stat-value" id="stat-visibility">-- km</span>
+          <span class="stat-value" id="stat-visibility">--</span>
+          <span class="stat-sub" id="stat-visibility-sub">&nbsp;</span>
         </div>
         <div class="stat glass">
-          <span class="stat-label">UV / AQI</span>
+          <span class="stat-label">Air quality</span>
           <span class="stat-value" id="stat-aqi">--</span>
+          <span class="stat-sub" id="stat-aqi-sub">&nbsp;</span>
+        </div>
+        <div class="stat glass">
+          <span class="stat-label">Dew point</span>
+          <span class="stat-value" id="stat-dew">--</span>
+          <span class="stat-sub" id="stat-dew-sub">&nbsp;</span>
         </div>
         <div class="stat glass">
           <span class="stat-label">Cloud cover</span>
           <span class="stat-value" id="stat-clouds">--%</span>
+          <span class="stat-sub" id="stat-clouds-sub">&nbsp;</span>
+        </div>
+        <div class="stat glass">
+          <span class="stat-label">Precipitation</span>
+          <span class="stat-value" id="stat-precip">--</span>
+          <span class="stat-sub" id="stat-precip-sub">&nbsp;</span>
         </div>
       </div>
 
       <!-- 5-day forecast -->
       <div class="forecast glass">
-        <h2 class="forecast-title">5-day forecast</h2>
-        <div class="forecast-strip" id="forecast-strip"></div>
+        <h2 class="panel-title">5-day forecast</h2>
+        <div class="forecast-strip" id="forecast-strip" role="list"></div>
+        <p class="strip-note" id="forecast-note" hidden>Tap a day for its 3-hourly breakdown. * marks a partial day — fewer than eight 3-hour readings.</p>
       </div>
 
-      <!-- Hourly forecast -->
+      <!-- Hourly forecast (also doubles as the per-day breakdown) -->
       <div class="hourly glass">
-        <h2 class="forecast-title">Next hours</h2>
-        <div class="hourly-strip" id="hourly-strip"></div>
+        <div class="panel-head">
+          <h2 class="panel-title" id="hourly-title">Next hours</h2>
+          <button type="button" id="hourly-reset" class="text-btn" hidden>← Back to next hours</button>
+        </div>
+        <div class="hourly-scroll" id="hourly-scroll">
+          <svg class="hourly-spark" id="hourly-spark" aria-hidden="true" preserveAspectRatio="none"></svg>
+          <div class="hourly-strip" id="hourly-strip" role="list"></div>
+        </div>
       </div>
 
     </section>
@@ -147,8 +208,14 @@
         <div class="glass shimmer"></div>
         <div class="glass shimmer"></div>
         <div class="glass shimmer"></div>
+        <div class="glass shimmer"></div>
+        <div class="glass shimmer"></div>
       </div>
     </section>
+
+    <noscript>
+      <p class="status-banner">Skyline needs JavaScript to fetch live weather data.</p>
+    </noscript>
 
     <footer class="footer">
       <span>Built by Sameer Sk · 2026</span>

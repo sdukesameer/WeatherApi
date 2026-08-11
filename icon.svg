@@ -1,0 +1,16 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-label="Skyline">
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#0b1220"/>
+      <stop offset="1" stop-color="#1f6fc4"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#sky)"/>
+  <!-- generous padding keeps the mark inside the maskable safe zone -->
+  <circle cx="205" cy="196" r="52" fill="#ffd27a"/>
+  <path d="M150 340a52 52 0 0 1 9.6-103.2 71 71 0 0 1 138.4 20.8A49 49 0 0 1 288 340Z"
+        transform="translate(30 10)" fill="none" stroke="#f4f7fb" stroke-width="20" stroke-linejoin="round"/>
+  <g stroke="#4fd1ff" stroke-width="18" stroke-linecap="round">
+    <path d="M212 388l-14 34M282 388l-14 34M352 388l-14 34"/>
+  </g>
+</svg>

@@ -1,9 +1,20 @@
 -> Google Fonts: Space Grotesk, Inter, JetBrains Mono for typography in style.css
 -> OpenWeather Geocoding API for city search autocomplete & reverse geocoding in script.js
 -> OpenWeather Current Weather API for live conditions in script.js
--> OpenWeather 5 Day / 3 Hour Forecast API for daily and hourly forecast strips in script.js
--> OpenWeather Air Pollution API for AQI in script.js
+-> OpenWeather 5 Day / 3 Hour Forecast API for the daily strip, hourly strip and precipitation probability in script.js
+-> OpenWeather Air Pollution API for AQI and the PM2.5 reading in script.js
 -> Browser Geolocation API for "use my location" in script.js
--> Canvas 2D API for the ambient rain/snow/star particle layer in script.js
+-> Canvas 2D API for the ambient rain/snow/star/lightning particle layer in script.js
 -> Inline SVG icon set (hand-built, no icon library) for weather condition icons
--> localStorage for persisted unit preference and recent searches
+-> Inline SVG polyline for the hourly temperature sparkline, positioned from measured DOM offsets
+-> SVG path geometry (getTotalLength / getPointAtLength) for the sunrise-to-sunset arc in script.js
+-> AbortController + AbortSignal for cancelling superseded requests and timing out slow ones
+-> localStorage for persisted unit preference, saved places, recent searches and the last-good payload
+-> History API (replaceState) + URLSearchParams for shareable, bookmarkable city links
+-> Clipboard API for the share button
+-> Service Worker + Cache API for offline app-shell support in sw.js
+-> Web App Manifest for installability in manifest.webmanifest
+-> CSS @property for animating custom properties, backdrop-filter for the glass surfaces
+-> WCAG relative-luminance formula (implemented in script.js) to pick dark vs light ink for the live backdrop
+-> Magnus-Tetens formula (implemented in script.js) to derive dew point from temperature and humidity
+-> WAI-ARIA combobox pattern (aria-expanded / aria-activedescendant / role=listbox) for the search dropdown
